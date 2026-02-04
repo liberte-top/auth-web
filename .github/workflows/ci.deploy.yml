@@ -54,15 +54,10 @@ jobs:
           repository: liberte-top/kubernetes
           path: kubernetes
 
-      - name: Prepare remote kubernetes directory
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            set -euo pipefail
-            install -d -m 0755 /home/k8s-admin/kubernetes/service/auth/web
+      - name: Pack auth-web manifests
+        run: |
+          set -euo pipefail
+          tar -czf /tmp/auth-web.tgz -C kubernetes/service/auth/web .
 
       - name: Upload auth-web manifests
         uses: appleboy/scp-action@v0.1.7
@@ -70,8 +65,8 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "kubernetes/service/auth/web/*"
-          target: "/home/k8s-admin/kubernetes/service/auth/web"
+          source: "/tmp/auth-web.tgz"
+          target: "/tmp"
           overwrite: true
 
       - name: Apply manifests
@@ -86,6 +81,8 @@ jobs:
             KUBECONFIG=/home/k8s-admin/.kube/config
             KUBE_NAMESPACE=service
             KUBE="${KUBECTL} --kubeconfig ${KUBECONFIG}"
+            install -d -m 0755 /home/k8s-admin/kubernetes/service/auth/web
+            tar -xzf /tmp/auth-web.tgz -C /home/k8s-admin/kubernetes/service/auth/web
             ${KUBE} apply -k /home/k8s-admin/kubernetes/service/auth/web
             TS=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
             sudo install -d -m 0755 /var/log/infra
