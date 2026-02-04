@@ -48,6 +48,17 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+      - name: Pre-pull image on node
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -euo pipefail
+            IMAGE="ghcr.io/liberte-top/auth-web:sha-${GITHUB_SHA::7}"
+            crictl pull "${IMAGE}"
+
       - name: Checkout kubernetes manifests
         uses: actions/checkout@v4
         with:
