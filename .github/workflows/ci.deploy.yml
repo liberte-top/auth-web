@@ -60,7 +60,7 @@ jobs:
           script: |
             set -euo pipefail
             IMAGE="ghcr.io/liberte-top/auth-web:${IMAGE_TAG:0:11}"
-            crictl pull "${IMAGE}"
+            sudo crictl pull "${IMAGE}"
 
       - name: Checkout kubernetes manifests
         uses: actions/checkout@v4
