@@ -50,13 +50,16 @@ jobs:
 
       - name: Pre-pull image on node
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          IMAGE_TAG: sha-${{ github.sha }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: IMAGE_TAG
           script: |
             set -euo pipefail
-            IMAGE="ghcr.io/liberte-top/auth-web:sha-${GITHUB_SHA::7}"
+            IMAGE="ghcr.io/liberte-top/auth-web:${IMAGE_TAG:0:11}"
             crictl pull "${IMAGE}"
 
       - name: Checkout kubernetes manifests
