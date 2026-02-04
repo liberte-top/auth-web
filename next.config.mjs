@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	reactStrictMode: true,
-	async rewrites() {
-		return [{ source: "/__health__", destination: "/health" }];
-	}
+	reactStrictMode: true
 };
 
 export default nextConfig;
