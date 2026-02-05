@@ -1,4 +1,16 @@
-export default function Home() {
+import { getAuthApi } from "@/openapi";
+import { HealthClient } from "./health-client";
+
+export default async function Home() {
+  let ssrHealth: string | null = null;
+  try {
+    const api = getAuthApi();
+    const data = await api.health();
+    ssrHealth = data?.status ?? null;
+  } catch {
+    ssrHealth = null;
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans">
       <main className="flex w-full max-w-3xl flex-col gap-6 rounded-2xl border border-zinc-200 bg-white p-10 shadow-sm">
@@ -22,8 +34,16 @@ export default function Home() {
             {process.env.NEXT_PUBLIC_GIT_SHA ?? "unknown"}
           </div>
           <div>
+            <span className="text-zinc-500">ssr health</span>:{" "}
+            {ssrHealth ?? "unavailable"}
+          </div>
+          <div>
             <span className="text-zinc-500">health</span>: /__health__
           </div>
+        </div>
+        <HealthClient />
+        <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50 p-4 text-sm text-zinc-700">
+          <span className="text-zinc-500">api route</span>: /api/health
         </div>
       </main>
     </div>
