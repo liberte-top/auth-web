@@ -30,10 +30,6 @@ export default async function Home() {
             {process.env.NEXT_PUBLIC_ENV ?? "unknown"}
           </div>
           <div>
-            <span className="text-zinc-500">version</span>:{" "}
-            {process.env.NEXT_PUBLIC_GIT_SHA ?? "unknown"}
-          </div>
-          <div>
             <span className="text-zinc-500">ssr health</span>:{" "}
             {ssrHealth ?? "unavailable"}
           </div>
