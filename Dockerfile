@@ -25,4 +25,4 @@ ENV NODE_ENV=production
 ENV PORT=8888
 
 # No EXPOSE: do not publish ports by default
-CMD ["node", "server.js"]
+CMD ["server.js"]
