@@ -97,12 +97,15 @@ jobs:
             KUBECONFIG=/home/k8s-admin/.kube/config
             KUBE_NAMESPACE=service
             KUBE="${KUBECTL} --kubeconfig ${KUBECONFIG}"
+            IMAGE_TAG="sha-${{ github.sha }}"
+            IMAGE="ghcr.io/liberte-top/auth-web:${IMAGE_TAG:0:11}"
             install -d -m 0755 /home/k8s-admin/kubernetes/manifests/service/auth/web
             tar -xzf /tmp/auth-web.tgz -C /home/k8s-admin/kubernetes/manifests/service/auth/web
             ${KUBE} apply -k /home/k8s-admin/kubernetes/manifests/service/auth/web
+            ${KUBE} -n ${KUBE_NAMESPACE} set image deploy/auth-web auth-web="${IMAGE}"
             TS=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
             sudo install -d -m 0755 /var/log/infra
-            echo "${TS} auth-web latest ${GITHUB_RUN_ID:-unknown}" | sudo tee -a /var/log/infra/auth-web.deploy.log >/dev/null
+            echo "${TS} auth-web ${IMAGE_TAG:0:11} ${GITHUB_RUN_ID:-unknown}" | sudo tee -a /var/log/infra/auth-web.deploy.log >/dev/null
 
       - name: E2E check (k8s)
         uses: appleboy/ssh-action@v1.0.3
